@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: onepointparis
+    description: "A dbt model using data from lakehouse.bronze.weatheronepoint"
+    columns:
+      - name: _airbyte_ab_id
+        description: "id"
+        tests:
+          - not_null
+      - name: _airbyte_emitted_at
+        description: "timestamp"
+        tests:
+          - not_null
+      - name: _airbyte_data
+        description: "Main data"
+        tests:
+          - not_null

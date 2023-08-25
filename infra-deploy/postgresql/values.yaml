@@ -1,0 +1,7 @@
+global:
+  postgresql:
+    auth:
+      postgresPassword: onepointpostgres
+      database: trino_demo
+      username: dataia_onepoint
+      password: trino_demo_password

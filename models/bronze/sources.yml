@@ -1,0 +1,17 @@
+version: 2
+sources:
+  - name: source
+    database: source
+    schema: weather
+    tables:
+      - name: onepointparis
+      - name: onepointrennes
+      - name: onepointbordeaux
+      - name: onepointmontreal
+
+
+  - name: sourcesilver
+    database: lakehouse
+    schema: silver
+    tables:
+      - name: weathersil

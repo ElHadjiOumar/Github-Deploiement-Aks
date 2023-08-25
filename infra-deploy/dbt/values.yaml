@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dbt
+spec:
+  containers:
+    - image: ghcr.io/dbt-labs/dbt-core
+      name: dbt
+      volumeMounts:
+      # - name: dbt-script
+      #   mountPath: /dbt-script.sh
+      #   subPath: dbt-script.sh
+      - name: dbt-project
+        mountPath: ../dbt_project.yml
+        subPath: dbt_project.yml
+      - name: profiles
+        mountPath: ../profiles.yml
+        subPath: profiles.yml
+      - name: models-volume
+        mountPath: ../models
+      - name: macros-volume
+        mountPath: ../macros
+  volumes:
+    # - configMap:
+    #     name: dbt-script
+    #   name: dbt-script
+    - configMap:
+        name: dbt-project
+      name: dbt-project
+    - configMap:
+        name: profiles
+      name: profiles
+    - name: models-volume
+      persistentVolumeClaim:
+        claimName: models-pvc
+    - name: macros-volume
+      persistentVolumeClaim:
+        claimName: macros-pvc
+---
+# apiVersion: v1
+# data:
+#   dbt-script.sh: |
+#     # Insérez le contenu du script dbt-script.sh ici
+
+# kind: ConfigMap
+# metadata:
+#   name: dbt-script
+# ---
+apiVersion: v1
+data:
+  dbt_project.yml: |
+    name: 'projet_dbt'
+    version: '1.0.0'
+    config-version: 2
+    profile: 'projet_dbt'
+    model-paths: ["models"]
+    analysis-paths: ["analyses"]
+    test-paths: ["tests"]
+    seed-paths: ["seeds"]
+    macro-paths: ["macros"]
+    snapshot-paths: ["snapshots"]
+
+    clean-targets:         # directories to be removed by `dbt clean`
+      - "target"
+      - "dbt_packages"
+    models:
+      projet_dbt:
+        bronze:
+          +schema: bronze
+          +materialized: table
+        silver:
+          +schema: silver
+          +materialized: table
+        gold:
+          +schema: gold
+          +materialized: table
+
+kind: ConfigMap
+metadata:
+  name: dbt-project
+---
+apiVersion: v1
+data:
+  profiles.yml: |
+    projet_dbt:
+      target: dev
+      outputs:
+        dev:
+          type: trino
+          method: none  # optional, one of {none | ldap | kerberos}
+          user: Trino
+          password:  # required if method is ldap or kerberos
+          catalog: lakehouse
+          host: trino
+          port: 8080
+          schema: bronze  # a faire essayer d'envoyer vers silver
+          threads: 1
+        gold:
+          type: trino
+          method: none  # optional, one of {none | ldap | kerberos}
+          user: Trino
+          password:  # required if method is ldap or kerberos
+          catalog: clickhouse
+          host: my-clickhouse
+          port: 8123
+          schema: gold  # a faire essayer d'envoyer vers silver
+
+kind: ConfigMap
+metadata:
+  name: profiles
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: models-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  # Ajoutez le nom du PersistentVolume pour le dossier ./models ici si nécessaire
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: macros-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  # Ajoutez le nom du PersistentVolume pour le dossier ./macros ici si nécessaire

@@ -1,0 +1,26 @@
+projet_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: trino
+      method: none  # optional, one of {none | ldap | kerberos}
+      user: Trino
+      password:  # required if method is ldap or kerberos
+      catalog: lakehouse
+      host: http://20.19.149.13
+      port: 8080
+      schema: bronze  # a faire essayer d'envoyer vers silver
+    gold:
+      type: trino
+      method: none  # optional, one of {none | ldap | kerberos}
+      user: Trino
+      password:  # required if method is ldap or kerberos
+      catalog: clickhouse
+      host: http://20.19.149.13
+      port: 8123
+      schema: gold  # a faire essayer d'envoyer vers silver
+
+
+
+
+

@@ -1,0 +1,49 @@
+# service:
+#     type: LoadBalancer
+
+# Ajout du NodeSelector
+# worker:
+#   nodeSelector:
+#     nodepool: worker
+# coordinator:
+#   nodeSelector:
+#     nodepool: worker
+
+
+# spec:
+#   tolerations:
+#   - key: "kubernetes.azure.com/scalesetpriority"
+#     operator: "Equal"
+#     value: "spot"
+#     effect: "NoSchedule"
+
+
+additionalCatalogs:
+  postgresql: |
+    connector.name=postgresql
+    connection-url=jdbc:postgresql://hive-metastore-postgresql:5432/trino_demo
+    connection-user=dataia_onepoint
+    connection-password=trino_demo_password
+  source: |
+    connector.name=hive
+    hive.metastore.uri=thrift://my-hive-metastore:9083
+    hive.s3.path-style-access=true
+    hive.s3.endpoint=http://minio:9000
+    hive.s3.aws-access-key=minioonepoint
+    hive.s3.aws-secret-key=OPdata2023+
+    hive.non-managed-table-writes-enabled=true
+    hive.s3select-pushdown.enabled=true
+    hive.security=allow-all 
+  lakehouse: |
+    connector.name=iceberg
+    hive.metastore.uri=thrift://my-hive-metastore:9083
+    hive.s3.path-style-access=true
+    hive.s3.endpoint=http://minio:9000
+    hive.s3.aws-access-key=minioonepoint
+    hive.s3.aws-secret-key=OPdata2023+
+  clickhouse: |
+    connector.name=clickhouse
+    connection-url=jdbc:clickhouse://clickhouse:8123/
+    connection-user=test
+    connection-password=onepoint
+    
