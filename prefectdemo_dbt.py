@@ -13,8 +13,7 @@ from prefect_dbt.cli import DbtCliProfile, DbtCoreOperation
 from prefect.deployments import run_deployment
 from prefect.deployments import Deployment
 from prefect.server.schemas.schedules import CronSchedule
-from prefect.filesystems import Azure
-
+from prefect.filesystems import GitHub
 
 
 
@@ -36,7 +35,11 @@ def airbyte_syncs():
 
     run_connection_sync(airbyte_connection_rennes)
 
-storage = Azure.load("azure-blob") # load a pre-defined block
+git = GitHub(
+    repository="https://github.com/ElHadjiOumar/Github-Deploiement-Aks",
+)
+git.get_directory(".") # specify a subfolder of repo
+git.save("blockgithub")
 
 # @flow(name="flow_dbt")
 # def flow_dbt() -> str:
@@ -82,7 +85,7 @@ deploiement_airbyte = Deployment.build_from_flow(
     flow= airbyte_syncs,
     name= "cron_airflow",
     work_queue_name="default",
-    path = './',
+    storage=git,
     work_pool_name="workpool-onepoint",
     schedule=(CronSchedule(cron="* * * * *", timezone="Europe/Paris"))
 )
