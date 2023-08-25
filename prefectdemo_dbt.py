@@ -35,11 +35,7 @@ def airbyte_syncs():
 
     run_connection_sync(airbyte_connection_rennes)
 
-git = GitHub(
-    repository="https://github.com/ElHadjiOumar/Github-Deploiement-Aks",
-)
-git.get_directory(".") # specify a subfolder of repo
-git.save("blockgithub")
+
 
 # @flow(name="flow_dbt")
 # def flow_dbt() -> str:
@@ -80,7 +76,7 @@ git.save("blockgithub")
 #     return result
 
 # trigger_dbt_flow()
-
+git = GitHub.load("blockgithub")
 deploiement_airbyte = Deployment.build_from_flow(
     flow= airbyte_syncs,
     name= "cron_airflow",
